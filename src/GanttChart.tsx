@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import mockTasksData from './data/mockTasks.json';
+import TaskLinks from './TaskLinks';
 
 interface TaskJson {
   id: number;
@@ -34,25 +35,50 @@ const LEFT_WIDTH = 700;
 const GanttChart = () => {
   const [tasks] = useState<Task[]>(() => transformTasks(mockTasksData));
 
-  const leftPaneContentRef = useRef<HTMLDivElement>(null);
-  const rightPaneRef = useRef<HTMLDivElement>(null);
+  const leftScrollRef = useRef<HTMLDivElement>(null);
+  const rightScrollRef = useRef<HTMLDivElement>(null);
 
+  // --- Scroll Synchronization ---
   useEffect(() => {
-    const right = rightPaneRef.current;
-    const leftContent = leftPaneContentRef.current;
-    if (!right || !leftContent) return;
+    const left = leftScrollRef.current;
+    const right = rightScrollRef.current;
+    if (!left || !right) return;
 
-    const syncScroll = () => {
-      requestAnimationFrame(() => {
-        leftContent.style.transform = `translateY(-${right.scrollTop}px)`;
+    let syncingLeft = false;
+    let syncingRight = false;
+    let animationFrameId: number | null = null;
+
+    const handleLeftScroll = () => {
+      if (syncingRight) return;
+      syncingLeft = true;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
+        right.scrollTop = left.scrollTop;
+        syncingLeft = false;
       });
     };
 
-    right.addEventListener('scroll', syncScroll);
-    return () => right.removeEventListener('scroll', syncScroll);
+    const handleRightScroll = () => {
+      if (syncingLeft) return;
+      syncingRight = true;
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
+        left.scrollTop = right.scrollTop;
+        syncingRight = false;
+      });
+    };
+
+    left.addEventListener('scroll', handleLeftScroll);
+    right.addEventListener('scroll', handleRightScroll);
+
+    return () => {
+      left.removeEventListener('scroll', handleLeftScroll);
+      right.removeEventListener('scroll', handleRightScroll);
+      if (animationFrameId) cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
-  // Timeline setup
+  // --- Timeline setup ---
   const allStart = tasks.map(t => t.start.getTime());
   const allEnd = tasks.map(t => t.end.getTime());
   const minDate = new Date(Math.min(...allStart));
@@ -69,7 +95,7 @@ const GanttChart = () => {
 
   const [dayWidth, setDayWidth] = useState(10);
   useEffect(() => {
-    const el = rightPaneRef.current;
+    const el = rightScrollRef.current;
     if (!el) return;
 
     const updateWidth = () => {
@@ -87,6 +113,7 @@ const GanttChart = () => {
     };
   }, [totalDays]);
 
+  // --- Month headers ---
   const months = useMemo(() => {
     const arr: { label: string; days: number }[] = [];
     let cur = new Date(timelineStart.getFullYear(), timelineStart.getMonth(), 1);
@@ -107,6 +134,7 @@ const GanttChart = () => {
     return arr;
   }, [timelineStart, timelineEnd]);
 
+  // --- Bars ---
   const bars = useMemo(() => {
     return tasks.map(t => {
       const startOffset = Math.max(0, (t.start.getTime() - timelineStart.getTime()) / 86400000);
@@ -120,6 +148,29 @@ const GanttChart = () => {
 
   const totalHeight = tasks.length * ROW_HEIGHT;
 
+  // --- Visible task detection ---
+  const [visibleTaskIds, setVisibleTaskIds] = useState<Set<number>>(new Set());
+  useEffect(() => {
+    const right = rightScrollRef.current;
+    if (!right) return;
+
+    const updateVisible = () => {
+      const top = right.scrollTop;
+      const bottom = top + right.clientHeight;
+      const ids = new Set<number>();
+      tasks.forEach((t, i) => {
+        const yTop = i * ROW_HEIGHT;
+        const yBottom = yTop + ROW_HEIGHT;
+        if (yBottom > top && yTop < bottom) ids.add(t.id);
+      });
+      setVisibleTaskIds(ids);
+    };
+
+    right.addEventListener('scroll', updateVisible);
+    updateVisible();
+    return () => right.removeEventListener('scroll', updateVisible);
+  }, [tasks]);
+
   return (
     <div className="w-full h-screen flex flex-col bg-gray-50">
       {/* Header */}
@@ -132,7 +183,6 @@ const GanttChart = () => {
             <span className="w-32">End</span>
           </div>
         </div>
-
         <div className="flex-1 px-1 py-3">
           <div className="flex">
             {months.map((m, idx) => (
@@ -148,38 +198,31 @@ const GanttChart = () => {
         </div>
       </div>
 
-      {/* Content Area */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Left Pane */}
+      {/* Content */}
+      <div className="flex-1 flex overflow-hidden relative">
+        {/* Left Pane (scrollable) */}
         <div
-          className="bg-white border-r border-gray-200 relative overflow-hidden"
+          ref={leftScrollRef}
+          className="bg-white border-r border-gray-200 overflow-y-scroll"
           style={{ width: LEFT_WIDTH }}
         >
-          <div
-            ref={leftPaneContentRef}
-            className="absolute top-0 left-0 right-0"
-            style={{
-              transform: `translateY(-${0}px)`,
-              willChange: 'transform',
-            }}
-          >
-            {tasks.map(t => (
-              <div
-                key={t.id}
-                className="flex items-center h-[50px] px-4 gap-3 border-b border-gray-200"
-              >
-                <span className="w-16 text-xs text-gray-600">{t.id}</span>
-                <div className="flex-1 min-w-[360px] text-sm truncate">{t.name}</div>
-                <span className="w-32 text-xs text-gray-600">{t.start.toLocaleDateString()}</span>
-                <span className="w-32 text-xs text-gray-600">{t.end.toLocaleDateString()}</span>
-              </div>
-            ))}
-          </div>
+          {tasks.map(t => (
+            <div
+              key={t.id}
+              className="flex items-center h-[50px] px-4 gap-3 border-b border-gray-200"
+            >
+              <span className="w-16 text-xs text-gray-600">{t.id}</span>
+              <div className="flex-1 min-w-[360px] text-sm truncate">{t.name}</div>
+              <span className="w-32 text-xs text-gray-600">{t.start.toLocaleDateString()}</span>
+              <span className="w-32 text-xs text-gray-600">{t.end.toLocaleDateString()}</span>
+            </div>
+          ))}
         </div>
 
-        {/* Right Pane (scrollbar visible here) */}
-        <div ref={rightPaneRef} className="flex-1 bg-gray-50 overflow-y-auto">
+        {/* Right Pane (scrollable) */}
+        <div ref={rightScrollRef} className="flex-1 bg-gray-50 overflow-y-scroll relative">
           <div className="relative" style={{ height: totalHeight }}>
+            {/* Month grid lines */}
             {months.map((_, i) => {
               const left = months.slice(0, i).reduce((sum, m) => sum + m.days * dayWidth, 0);
               return (
@@ -191,6 +234,7 @@ const GanttChart = () => {
               );
             })}
 
+            {/* Bars */}
             {tasks.map((t, i) => {
               const bar = bars[i];
               return (
@@ -217,13 +261,26 @@ const GanttChart = () => {
                 </div>
               );
             })}
+
+            {/* Task links overlay */}
+            <TaskLinks
+              tasks={tasks.map((t, i) => ({
+                id: t.id,
+                dependencies: t.dependencies,
+                left: bars[i].left,
+                top: i * ROW_HEIGHT,
+                width: bars[i].width,
+                height: ROW_HEIGHT,
+              }))}
+              visibleTaskIds={visibleTaskIds}
+            />
           </div>
         </div>
       </div>
 
       {/* Footer */}
       <div className="bg-white border-t border-gray-200 px-4 py-2 text-sm text-gray-600">
-        {tasks.length.toLocaleString()} tasks • Single shared vertical scroll active.
+        {tasks.length.toLocaleString()} tasks • Both panes scrollable and synced vertically.
       </div>
     </div>
   );
