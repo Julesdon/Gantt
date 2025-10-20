@@ -1,12 +1,14 @@
-import GanttChart from './GanttChart.tsx'
+import * as React from 'react';
+import GridView from './components/GridView/GridView';
 
-function App() {
+const TypedGridView = GridView as React.ComponentType<{ totalRows: number; rowHeight: number }>;
+
+const App: React.FC = () => {
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <h1 className="text-3xl font-bold mb-6">Gantt Chart Demo</h1>
-      <GanttChart />
+    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      <TypedGridView totalRows={100} rowHeight={20} />
     </div>
-  )
-}
+  );
+};
 
-export default App
+export default App;

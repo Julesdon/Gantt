@@ -68,3 +68,19 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Ensure the root container and body have proper dimensions */
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Add styles for the GridView container */
+GridView {
+  flex: 1;
+  position: relative;
+  overflow: auto;
+}

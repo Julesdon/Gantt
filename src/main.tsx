@@ -1,12 +1,8 @@
-import React from 'react'/**
-
-import ReactDOM from 'react-dom/client' * main.tsx
+/**import ReactDOM from 'react-dom/client' * main.tsx
 
 import App from './App' * 
 
 import './index.css' * React application bootstrap and DOM mounting point.
-
- * 
 
 ReactDOM.createRoot(document.getElementById('root')!).render( * Purpose:
 
@@ -14,27 +10,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render( * Purpose:
 
     <App /> * - Mounts the App component to the DOM
 
-  </React.StrictMode>, * - Wraps the application in React.StrictMode for development checks
-
-) * 
-
- * Dependencies:
- * - React 19: Using StrictMode and createRoot API
- * - index.css: Global Tailwind CSS styles
- * - App: Root application component
- * 
- * Entry Point:
- * This is the entry point defined in index.html and Vite configuration.
- * It creates the React root and renders the application into the #root element.
- */
+  </React.StrictMode>, * - Wraps the application in React.StrictMode for development checks*/
 
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.tsx'
+import GridView from "./components/GridView/GridView";
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <GridView />
   </StrictMode>,
 )
