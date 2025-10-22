@@ -1,3 +1,4 @@
+// Date helper functions
 export const startOfDay = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate());
 
 export const addDays = (d: Date, n: number) => {
