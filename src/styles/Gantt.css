@@ -1,0 +1,54 @@
+/* General styles for the Gantt chart */
+
+.gantt-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: #f9fafb;
+}
+
+.gantt-header {
+  display: flex;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: white;
+}
+
+.gantt-header-left {
+  width: var(--left-col-width);
+  border-right: 1px solid #e5e7eb;
+  padding: 8px;
+}
+
+.gantt-header-right {
+  flex: 1;
+  overflow-x: auto;
+  pointer-events: none;
+}
+
+.gantt-grid {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.gantt-grid-header {
+  display: grid;
+  grid-template-columns: repeat(var(--window-days), var(--col-width));
+}
+
+.gantt-grid-row {
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border-bottom: 1px solid #f3f4f6;
+  background: white;
+  font-size: 13px;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
