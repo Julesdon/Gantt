@@ -1,14 +1,25 @@
-import * as React from 'react';
-import GridView from './components/GridView/GridView';
+// App.tsx
+import React, { useMemo } from "react";
+import Gantt60DayPOC from "./Gantt";
 
-const TypedGridView = GridView as React.ComponentType<{ totalRows: number; rowHeight: number }>;
+function App() {
+  const memoizedGantt = useMemo(() => {
+    return <Gantt60DayPOC key="gantt" />; // Add stable key prop
+  }, []); // Memoize the Gantt component
 
-const App: React.FC = () => {
+  const containerStyle = useMemo(() => ({
+    height: "100vh",
+    width: "100vw",
+    margin: 0,
+    padding: 0,
+    overflow: "hidden",
+  }), []); // Memoize the container style
+
   return (
-    <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
-      <TypedGridView totalRows={100} rowHeight={20} />
+    <div style={containerStyle}>
+      {memoizedGantt}
     </div>
   );
-};
+}
 
-export default App;
+export default React.memo(App);
