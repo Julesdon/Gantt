@@ -1,7 +1,7 @@
 import React, { RefObject } from "react";
 import { Task } from "../utils/taskGenerator";
 import { TaskRow } from "./TaskRow";
-import { ROW_HEIGHT, COL_WIDTH, WINDOW_DAYS } from "../utils/constants";
+import { ROW_HEIGHT, COL_WIDTH, WINDOW_DAYS, LEFT_COL_WIDTH } from "../utils/constants";
 import { addDays } from "../utils/dateHelpers";
 
 interface GanttGridProps {
@@ -14,33 +14,76 @@ export const GanttGrid: React.FC<GanttGridProps> = ({ tasks, windowStart, rowsSc
   const days = Array.from({ length: WINDOW_DAYS }, (_, i) => addDays(windowStart, i));
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-      {/* Days Header */}
-      <div style={{ display: "grid", gridTemplateColumns: `repeat(${WINDOW_DAYS}, ${COL_WIDTH}px)` }}>
-        {days.map((day, index) => (
-          <div
-            key={index}
-            style={{
-              width: COL_WIDTH,
-              height: ROW_HEIGHT,
-              borderRight: "1px solid #e5e7eb",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 12,
-              color: "#111827",
-            }}
-          >
-            {day.toLocaleDateString(undefined, { day: "2-digit", month: "short" })}
-          </div>
-        ))}
+    <div style={{ display: "grid", gridTemplateColumns: `${LEFT_COL_WIDTH}px auto`, flex: 1 }}>
+      {/* Task Names */}
+      <div
+        style={{
+          position: "sticky",
+          left: 0,
+          zIndex: 2,
+          background: "white",
+          borderRight: "1px solid #e5e7eb",
+        }}
+      >
+        <div style={{ height: ROW_HEIGHT * tasks.length, position: "relative" }}>
+          {tasks.map((task, index) => (
+            <div
+              key={task.id}
+              style={{
+                height: ROW_HEIGHT,
+                display: "flex",
+                alignItems: "center",
+                padding: "0 12px",
+                borderBottom: "1px solid #f3f4f6",
+                background: index % 2 === 0 ? "#ffffff" : "#fcfcfc",
+              }}
+            >
+              {task.name}
+            </div>
+          ))}
+        </div>
       </div>
 
-      {/* Task Rows */}
-      <div ref={rowsScrollRef} style={{ overflowY: "auto", flex: 1 }}>
-        {tasks.map((task) => (
-          <TaskRow key={task.id} task={task} windowStart={windowStart} windowEnd={addDays(windowStart, WINDOW_DAYS)} />
-        ))}
+      {/* Task Grid */}
+      <div ref={rowsScrollRef} style={{ overflowX: "auto" }}>
+        <svg
+          style={{ display: "block" }}
+          width={WINDOW_DAYS * COL_WIDTH}
+          height={ROW_HEIGHT * tasks.length}
+        >
+          {/* Grid Lines */}
+          {days.map((_, dayIndex) => (
+            <line
+              key={`day-${dayIndex}`}
+              x1={dayIndex * COL_WIDTH}
+              y1={0}
+              x2={dayIndex * COL_WIDTH}
+              y2={ROW_HEIGHT * tasks.length}
+              stroke="#e5e7eb"
+            />
+          ))}
+          {tasks.map((_, taskIndex) => (
+            <line
+              key={`task-${taskIndex}`}
+              x1={0}
+              y1={taskIndex * ROW_HEIGHT}
+              x2={WINDOW_DAYS * COL_WIDTH}
+              y2={taskIndex * ROW_HEIGHT}
+              stroke="#e5e7eb"
+            />
+          ))}
+
+          {/* Task Bars */}
+          {tasks.map((task, taskIndex) => (
+            <TaskRow
+              key={task.id}
+              task={task}
+              windowStart={windowStart}
+              windowEnd={addDays(windowStart, WINDOW_DAYS)}
+              rowIndex={taskIndex}
+            />
+          ))}
+        </svg>
       </div>
     </div>
   );

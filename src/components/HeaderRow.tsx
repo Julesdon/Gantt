@@ -1,22 +1,35 @@
 import React, { RefObject } from "react";
 import { GanttHeader } from "./GanttHeader";
-import { LEFT_COL_WIDTH } from "../utils/constants";
+import { LEFT_COL_WIDTH, COL_WIDTH, WINDOW_DAYS } from "../utils/constants";
 
 interface HeaderRowProps {
   windowStart: Date;
-  rightHeaderScrollRef: RefObject<HTMLDivElement>;
   totalWidth: number;
 }
 
-export const HeaderRow: React.FC<HeaderRowProps> = ({ windowStart, rightHeaderScrollRef, totalWidth }) => {
+export const HeaderRow: React.FC<HeaderRowProps> = ({ windowStart, totalWidth }) => {
   return (
-    <div style={{ display: "flex", position: "sticky", top: 0, zIndex: 10, background: "white" }}>
-      <div style={{ width: LEFT_COL_WIDTH, borderRight: "1px solid #e5e7eb", padding: "8px" }}>Task</div>
-      <div
-        ref={rightHeaderScrollRef}
-        style={{ flex: 1, overflowX: "auto", pointerEvents: "none" }}
-      >
-        <div style={{ width: totalWidth }}>
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: `${LEFT_COL_WIDTH}px auto`,
+        position: "sticky",
+        top: 0,
+        zIndex: 10,
+        background: "white",
+      }}
+    >
+      {/* Task Header */}
+      <div style={{ borderRight: "1px solid #e5e7eb", padding: "8px" }}>Task</div>
+
+      {/* Days Header */}
+      <div style={{ overflowX: "auto" }}>
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: `repeat(${WINDOW_DAYS}, ${COL_WIDTH}px)`,
+          }}
+        >
           <GanttHeader windowStart={windowStart} />
         </div>
       </div>
