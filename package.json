@@ -9,7 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ljharb/tsconfig": "^0.3.2",
     "@tanstack/react-virtual": "^3.13.12",
+    "@types/node": "^24.9.1",
+    "hasown": "^2.0.2",
     "lodash.debounce": "^4.0.8",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",

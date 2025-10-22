@@ -1,10 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import DaysHeader from "./components/DaysHeader";
-import RightGridRow from "./components/RightGridRow";
-import TaskList from "./components/TaskList";
-import Toolbar from "./components/Toolbar";
-import { ROW_HEIGHT, HEADER_HEIGHT } from "./constants"; // Use shared constant for row height
 
 /**
  * Gantt60DayPOC.tsx
@@ -27,6 +22,7 @@ import { ROW_HEIGHT, HEADER_HEIGHT } from "./constants"; // Use shared constant 
  */
 
 // ====== Tunables ======
+const ROW_HEIGHT = 36;           // px per task row
 const COL_WIDTH = 32;            // px per day column
 const WINDOW_DAYS = 60;          // fixed window size
 const LEFT_COL_WIDTH = 280;      // px (task name column)
@@ -116,6 +112,37 @@ export default function Gantt60DayPOC() {
     return { x, w };
   };
 
+  // --- render helpers ---
+  const DaysHeader = () => {
+    const days = [] as JSX.Element[];
+    for (let i = 0; i < WINDOW_DAYS; i++) {
+      const d = addDays(windowStart, i);
+      days.push(
+        <div key={i} style={{
+          width: COL_WIDTH,
+          minWidth: COL_WIDTH,
+          maxWidth: COL_WIDTH,
+          height: 28,
+          boxSizing: "border-box",
+          borderRight: "1px solid #e5e7eb",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 12,
+          color: "#111827",
+        }}>
+          {fmtDay(d)}
+        </div>
+      );
+    }
+    return (
+      <div style={{ position: "relative", width: totalWidth }}>
+        <div style={{ display: "flex" }}>{days}</div>
+        {/* Vertical month separators (optional) */}
+      </div>
+    );
+  };
+
   // ====== RENDER ======
   const totalHeight = rowVirtualizer.getTotalSize();
   const virtualItems = rowVirtualizer.getVirtualItems();
@@ -123,30 +150,38 @@ export default function Gantt60DayPOC() {
   return (
     <div style={styles.appRoot}>
       {/* Controls */}
-      <Toolbar
-        windowStart={windowStart}
-        shiftWindow={shiftWindow}
-        setWindowStart={setWindowStart}
-        windowDays={WINDOW_DAYS}
-      />
+      <div style={styles.toolbar}>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <button style={styles.btn} onClick={() => shiftWindow(-60)}>◀︎ 60d</button>
+          <button style={styles.btn} onClick={() => shiftWindow(-7)}>◀︎ 7d</button>
+          <button style={styles.btn} onClick={() => setWindowStart(startOfDay(new Date()))}>Today</button>
+          <button style={styles.btn} onClick={() => shiftWindow(7)}>7d ▶︎</button>
+          <button style={styles.btn} onClick={() => shiftWindow(60)}>60d ▶︎</button>
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <label style={{ fontSize: 12, color: "#374151" }}>Start date</label>
+          <input
+            type="date"
+            value={toDateInputValue(windowStart)}
+            onChange={onPickDate}
+            style={styles.dateInput}
+          />
+          <span style={{ fontSize: 12, color: "#6b7280" }}>
+            Window: {fmtDay(windowStart)} → {fmtDay(addDays(windowStart, WINDOW_DAYS - 1))}
+          </span>
+        </div>
+      </div>
 
       {/* Header row */}
-      <div className="header" style={{ display: "flex", alignItems: "stretch", height: 48 }}>
-        <div className="left-header" style={{ width: LEFT_COL_WIDTH }}>Task</div>
+      <div style={styles.headerRow}>
+        <div style={{ ...styles.leftHeader, width: LEFT_COL_WIDTH }}>Task</div>
         <div
-          className="right-header"
-          style={{
-            flexGrow: 1,
-            overflowX: "hidden",
-            width: `calc(100% - ${LEFT_COL_WIDTH}px)`,
-          }}
+          ref={rightHeaderScrollRef}
+          style={{ ...styles.rightHeader, width: `calc(100% - ${LEFT_COL_WIDTH}px)`, pointerEvents: "none", overflowX: "auto" }}
         >
-          <DaysHeader
-            windowStart={windowStart}
-            totalWidth={totalWidth}
-            colWidth={COL_WIDTH}
-            windowDays={WINDOW_DAYS}
-          />
+          <div style={{ width: totalWidth }}>
+            <DaysHeader />
+          </div>
         </div>
       </div>
 
@@ -192,15 +227,12 @@ export default function Gantt60DayPOC() {
           {/* Right: timeline (horizontal scroll source) */}
           <div
             ref={rightBodyScrollRef}
-            style={{
-              ...styles.rightBodyScroll,
-              width: `calc(100% - ${LEFT_COL_WIDTH}px)`,
-              marginTop: HEADER_HEIGHT - ROW_HEIGHT, // Adjust to align SVG with Task 1
-            }}
+            style={{ ...styles.rightBodyScroll, width: `calc(100% - ${LEFT_COL_WIDTH}px)` }}
           >
             <div style={{ width: totalWidth, height: totalHeight, position: "relative" }}>
               {virtualItems.map(vi => {
                 const task = allTasks[vi.index];
+                const { x, w } = computeBar(task); // Calculate x and w for the task
                 return (
                   <div
                     key={vi.key}
@@ -215,12 +247,15 @@ export default function Gantt60DayPOC() {
                       background: vi.index % 2 === 0 ? "transparent" : "rgba(0,0,0,0.01)",
                     }}
                   >
-                    <RightGridRow
-                      task={task}
-                      computeBar={computeBar}
-                      totalWidth={totalWidth}
-                      rowHeight={ROW_HEIGHT}
-                    />
+                    {/* SVG bar, clipped to the window */}
+                    <svg width={totalWidth} height={ROW_HEIGHT} style={{ position: "absolute", left: 0, top: 0 }}>
+                      {w > 0 && (
+                        <g>
+                          <rect x={x + 2} y={8} width={w - 4} height={ROW_HEIGHT - 16} rx={6} ry={6} fill="#3b82f6" />
+                          {/* progress or handle elements could go here */}
+                        </g>
+                      )}
+                    </svg>
                   </div>
                 );
               })}
@@ -307,54 +342,6 @@ const styles: Record<string, React.CSSProperties> = {
     height: "calc(100% - 48px - 28px)", // total minus toolbar and header
   },
   rightBodyScroll: {
-    overflowX: "auto",
-    overflowY: "hidden",
-  },
-  root: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-  },
-  header: {
-    display: "flex",
-    alignItems: "center",
-    borderBottom: "1px solid #e5e7eb",
-    background: "white",
-    position: "sticky",
-    top: 0,
-    zIndex: 2,
-  },
-  "left-header": {
-    padding: "6px 12px",
-    fontSize: 12,
-    color: "#374151",
-    borderRight: "1px solid #e5e7eb",
-    background: "white",
-    width: LEFT_COL_WIDTH,
-  },
-  "right-header": {
-    height: 28,
-    overflowX: "hidden",
-    borderLeft: "1px solid #f3f4f6",
-    flex: 1,
-  },
-  body: {
-    display: "flex",
-    flexDirection: "row",
-    height: "100%",
-    position: "relative",
-    overflow: "hidden",
-  },
-  "left-body": {
-    width: LEFT_COL_WIDTH,
-    position: "sticky",
-    left: 0,
-    zIndex: 2,
-    background: "white",
-    borderRight: "1px solid #e5e7eb",
-  },
-  "right-body": {
-    flex: 1,
     overflowX: "auto",
     overflowY: "hidden",
   },
