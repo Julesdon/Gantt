@@ -40,7 +40,10 @@ export const Toolbar: React.FC<ToolbarProps> = ({ windowStart, shiftWindow, setW
         type="date"
         value={windowStart.toISOString().split("T")[0]}
         onChange={onPickDate}
-        className="border rounded px-2 py-1 appearance-none focus:outline-none"
+        className="w-48 outline-none focus:outline-none text-slate-800 placeholder:text-slate-600/60 bg-transparent ring-transparent border border-slate-200 transition-all duration-300 ease-in disabled:opacity-50 disabled:pointer-events-none text-sm rounded-md py-2 px-2.5 ring shadow-sm hover:border-slate-800 hover:ring-slate-800/10 focus:border-slate-800 focus:ring-slate-800/10 peer"
+        data-error="false"
+        data-success="false"
+        placeholder="Start date"
       />
       <span>
         Window: {fmtDay(windowStart)} → {fmtDay(addDays(windowStart, 59))}
