@@ -1,8 +1,9 @@
-import React, { RefObject } from "react";
-import { Task } from "../utils/taskGenerator";
-import { TaskRow } from "./TaskRow";
-import { ROW_HEIGHT, COL_WIDTH, WINDOW_DAYS, LEFT_COL_WIDTH } from "../utils/constants";
+import type { RefObject } from "react";
+import React from "react";
+import { COL_WIDTH, LEFT_COL_WIDTH, ROW_HEIGHT, WINDOW_DAYS } from "../utils/constants";
 import { addDays } from "../utils/dateHelpers";
+import type { Task } from "../utils/taskGenerator";
+import { TaskRow } from "./TaskRow";
 
 interface GanttGridProps {
   tasks: Task[];

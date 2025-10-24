@@ -1,6 +1,6 @@
 import React from "react";
-import { Task } from "../utils/taskGenerator";
 import { COL_WIDTH, ROW_HEIGHT } from "../utils/constants";
+import type { Task } from "../utils/taskGenerator";
 
 interface TaskRowProps {
   task: Task;

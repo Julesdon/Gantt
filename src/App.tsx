@@ -1,15 +1,24 @@
 // App.tsx
-import React, { useRef, useState } from "react";
-import { Toolbar } from "./components/Toolbar";
-import { HeaderRow } from "./components/HeaderRow";
+import type { RefObject } from "react";
+import { useRef, useState } from "react";
 import { GanttGrid } from "./components/GanttGrid";
-import { makeDemoTasks } from "./utils/taskGenerator";
-import { startOfDay, addDays } from "./utils/dateHelpers";
+import { HeaderRow } from "./components/HeaderRow";
+import { Toolbar } from "./components/Toolbar";
 import { WINDOW_DAYS } from "./utils/constants";
+import { addDays, startOfDay } from "./utils/dateHelpers";
+import { makeDemoTasks } from "./utils/taskGenerator";
+
+import type { Task } from "./utils/taskGenerator";
+
+interface GanttGridProps {
+  tasks: Task[];
+  windowStart: Date;
+  rowsScrollRef: RefObject<HTMLDivElement>;
+}
 
 function App() {
   const [windowStart, setWindowStart] = useState(() => startOfDay(new Date()));
-  const rowsScrollRef = useRef<HTMLDivElement | null>(null);
+  const rowsScrollRef = useRef<HTMLDivElement>(null) as React.RefObject<HTMLDivElement>;
   const tasks = makeDemoTasks();
 
   const shiftWindow = (days: number) => setWindowStart((prev) => addDays(prev, days));

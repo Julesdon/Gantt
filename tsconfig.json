@@ -6,6 +6,7 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "types": ["vite/client"],
     "skipLibCheck": true,
+    "jsx": "react-jsx", // Enable JSX support for React
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -18,7 +19,7 @@
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "erasableSyntaxOnly": true,
+    // "erasableSyntaxOnly": true, // Removed to allow JSX syntax
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },

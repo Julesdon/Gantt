@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 /**
  * Gantt60DayPOC.tsx
@@ -94,7 +94,7 @@ export default function Gantt60DayPOC() {
   }, []);
 
   // --- navigation helpers ---
-  const shiftWindow = (days: number) => setWindowStart(s => addDays(s, days));
+  const shiftWindow = (days: number) => setWindowStart((s: Date) => addDays(s, days));
   const onPickDate = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value; // yyyy-mm-dd
     if (!val) return;
@@ -114,7 +114,7 @@ export default function Gantt60DayPOC() {
 
   // --- render helpers ---
   const DaysHeader = () => {
-    const days = [] as JSX.Element[];
+    const days: React.ReactNode[] = [];
     for (let i = 0; i < WINDOW_DAYS; i++) {
       const d = addDays(windowStart, i);
       days.push(
