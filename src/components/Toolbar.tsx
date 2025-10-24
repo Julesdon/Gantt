@@ -1,5 +1,6 @@
 import React from "react";
 import { fmtDay, addDays, startOfDay } from "../utils/dateHelpers";
+import { Button } from "@headlessui/react";
 
 interface ToolbarProps {
   windowStart: Date;
@@ -16,21 +17,35 @@ export const Toolbar: React.FC<ToolbarProps> = ({ windowStart, shiftWindow, setW
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, padding: 8, background: "#f9fafb" }}>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <button onClick={() => shiftWindow(-60)}>◀︎ 60d</button>
-        <button onClick={() => shiftWindow(-7)}>◀︎ 7d</button>
-        <button onClick={() => setWindowStart(startOfDay(new Date()))}>Today</button>
-        <button onClick={() => shiftWindow(7)}>7d ▶︎</button>
-        <button onClick={() => shiftWindow(60)}>60d ▶︎</button>
-      </div>
-      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-        <label>Start date</label>
-        <input type="date" value={windowStart.toISOString().split("T")[0]} onChange={onPickDate} />
-        <span>
-          Window: {fmtDay(windowStart)} → {fmtDay(addDays(windowStart, 59))}
-        </span>
-      </div>
+    <div className="flex gap-8 items-center p-2 bg-gray-50">
+      <button
+        onClick={() => shiftWindow(-7)}
+        className="w-8 h-8 rounded-full bg-blue-500 text-white appearance-none focus:outline-none"
+      >
+        -
+      </button>
+      <button
+        onClick={() => setWindowStart(startOfDay(new Date()))}
+        className="px-4 py-2 rounded bg-green-500 text-white appearance-none focus:outline-none"
+      >
+        Today
+      </button>
+      <button
+        onClick={() => shiftWindow(7)}
+        className="w-8 h-8 rounded-full bg-blue-500 text-white appearance-none focus:outline-none"
+      >
+        +
+      </button>
+      <label>Start date</label>
+      <input
+        type="date"
+        value={windowStart.toISOString().split("T")[0]}
+        onChange={onPickDate}
+        className="border rounded px-2 py-1 appearance-none focus:outline-none"
+      />
+      <span>
+        Window: {fmtDay(windowStart)} → {fmtDay(addDays(windowStart, 59))}
+      </span>
     </div>
   );
 };
