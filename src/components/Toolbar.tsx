@@ -1,6 +1,5 @@
 import React from "react";
-import { fmtDay, addDays, startOfDay } from "../utils/dateHelpers";
-import { Button } from "@headlessui/react";
+import { addDays, fmtDay, startOfDay } from "../utils/dateHelpers";
 
 interface ToolbarProps {
   windowStart: Date;
@@ -20,19 +19,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({ windowStart, shiftWindow, setW
     <div className="flex gap-8 items-center p-2 bg-gray-50">
       <button
         onClick={() => shiftWindow(-7)}
-        className="w-8 h-8 rounded-full bg-blue-500 text-white appearance-none focus:outline-none"
+        className="w-8 h-8 rounded-full bg-blue-500 hover:bg-red-500 text-white font-bold border-2 border-black focus:outline-none"
       >
         -
       </button>
       <button
         onClick={() => setWindowStart(startOfDay(new Date()))}
-        className="px-4 py-2 rounded bg-green-500 text-white appearance-none focus:outline-none"
+        className="px-4 py-2 rounded bg-green-500 hover:bg-red-500 text-white font-bold border-2 border-black focus:outline-none"
       >
         Today
       </button>
       <button
         onClick={() => shiftWindow(7)}
-        className="w-8 h-8 rounded-full bg-blue-500 text-white appearance-none focus:outline-none"
+        className="w-8 h-8 rounded-full bg-blue-500 hover:bg-red-500 text-white font-bold border-2 border-black focus:outline-none"
       >
         +
       </button>

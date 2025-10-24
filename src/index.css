@@ -1,14 +1,13 @@
 /* index.css */
 
 /* stylelint-disable */
+/* stylelint-enable */
+
+/* Removed empty button ruleset for Tailwind v4 compatibility */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* stylelint-enable */
-
-button {
-  @apply appearance-none;
-}
 
 .test-class {
   color: red;
