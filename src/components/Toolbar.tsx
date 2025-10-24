@@ -19,19 +19,19 @@ export const Toolbar: React.FC<ToolbarProps> = ({ windowStart, shiftWindow, setW
     <div className="flex gap-8 items-center p-2 bg-gray-50">
       <button
         onClick={() => shiftWindow(-7)}
-        className="w-8 h-8 rounded-full bg-blue-500 hover:bg-red-500 text-white font-bold border-2 border-black focus:outline-none"
+        className="inline-flex border font-medium font-sans text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm rounded-md py-2 px-4 bg-transparent border-transparent text-slate-800 hover:bg-slate-800/5 hover:border-slate-800/5 shadow-none hover:shadow-none"
       >
         -
       </button>
       <button
         onClick={() => setWindowStart(startOfDay(new Date()))}
-        className="px-4 py-2 rounded bg-green-500 hover:bg-red-500 text-white font-bold border-2 border-black focus:outline-none"
+        className="inline-flex border font-medium font-sans text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm rounded-md py-2 px-4 bg-transparent border-transparent text-slate-800 hover:bg-slate-800/5 hover:border-slate-800/5 shadow-none hover:shadow-none"
       >
         Today
       </button>
       <button
         onClick={() => shiftWindow(7)}
-        className="w-8 h-8 rounded-full bg-blue-500 hover:bg-red-500 text-white font-bold border-2 border-black focus:outline-none"
+        className="inline-flex border font-medium font-sans text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm rounded-md py-2 px-4 bg-transparent border-transparent text-slate-800 hover:bg-slate-800/5 hover:border-slate-800/5 shadow-none hover:shadow-none"
       >
         +
       </button>
