@@ -1,13 +1,20 @@
-import React, { RefObject } from "react";
+import React from "react";
 import { GanttHeader } from "./GanttHeader";
 import { LEFT_COL_WIDTH, COL_WIDTH, WINDOW_DAYS } from "../utils/constants";
 
+/**
+ * HeaderRow Component
+ * -------------------
+ * This component renders the header section of the Gantt chart.
+ * It includes:
+ * - A fixed left column for the "Task" label.
+ * - A scrollable right section for the calendar header, displaying days.
+ */
 interface HeaderRowProps {
-  windowStart: Date;
-  totalWidth: number;
+  windowStart: Date; // The start date of the visible window.
 }
 
-export const HeaderRow: React.FC<HeaderRowProps> = ({ windowStart, totalWidth }) => {
+export const HeaderRow: React.FC<HeaderRowProps> = ({ windowStart }) => {
   return (
     <div
       style={{
@@ -19,11 +26,11 @@ export const HeaderRow: React.FC<HeaderRowProps> = ({ windowStart, totalWidth })
         background: "white",
       }}
     >
-      {/* Task Header */}
+      {/* Left Column: Task Label */}
       <div style={{ borderRight: "1px solid #e5e7eb", padding: "8px" }}>Task</div>
 
-      {/* Days Header */}
-      <div style={{ overflowX: "auto" }}>
+      {/* Right Column: Calendar Header */}
+      <div style={{ overflow: "hidden" }}>
         <div
           style={{
             display: "grid",

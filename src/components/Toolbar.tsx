@@ -21,7 +21,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ windowStart, shiftWindow, setW
         onClick={() => shiftWindow(-7)}
         className="inline-flex border font-medium font-sans text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm rounded-md py-2 px-4 bg-transparent border-transparent text-slate-800 hover:bg-slate-800/5 hover:border-slate-800/5 shadow-none hover:shadow-none"
       >
-        -
+       {'<'}
       </button>
       <button
         onClick={() => setWindowStart(startOfDay(new Date()))}
@@ -33,7 +33,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ windowStart, shiftWindow, setW
         onClick={() => shiftWindow(7)}
         className="inline-flex border font-medium font-sans text-center transition-all duration-300 ease-in disabled:opacity-50 disabled:shadow-none disabled:cursor-not-allowed focus:shadow-none text-sm rounded-md py-2 px-4 bg-transparent border-transparent text-slate-800 hover:bg-slate-800/5 hover:border-slate-800/5 shadow-none hover:shadow-none"
       >
-        +
+       {'>'}
       </button>
       <label>Start date</label>
       <input
