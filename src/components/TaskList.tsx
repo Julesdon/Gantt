@@ -1,7 +1,7 @@
-import React, { RefObject } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Task } from "../utils/taskGenerator";
-import { ROW_HEIGHT, LEFT_COL_WIDTH } from "../utils/constants";
+import React, { type RefObject } from "react";
+import { LEFT_COL_WIDTH, ROW_HEIGHT } from "../utils/constants";
+import type { Task } from "../utils/taskGenerator";
 
 interface TaskListProps {
   tasks: Task[];
@@ -27,8 +27,8 @@ export const TaskList: React.FC<TaskListProps> = ({ tasks, rowsScrollRef }) => {
           position: "sticky",
           left: 0,
           zIndex: 2,
-          background: "white",
-          borderRight: "1px solid #e5e7eb",
+          background: "rgb(179, 190, 211)",
+          borderRight: "1px solidrgb(119, 133, 161)",
         }}
       >
         <div style={{ height: totalHeight, position: "relative" }}>

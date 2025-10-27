@@ -1,6 +1,6 @@
 import React from "react";
-import { fmtDay } from "../utils/dateHelpers";
 import { COL_WIDTH, WINDOW_DAYS } from "../utils/constants";
+import { fmtDay } from "../utils/dateHelpers";
 
 interface GanttHeaderProps {
   windowStart: Date;
@@ -17,7 +17,8 @@ export const GanttHeader: React.FC<GanttHeaderProps> = ({ windowStart }) => {
         position: "sticky",
         top: 0,
         background: "white",
-        zIndex: 1,
+        zIndex: 1
+        // Removed width and overflow styles to restore all cells
       }}
     >
       {days.map((day, index) => (

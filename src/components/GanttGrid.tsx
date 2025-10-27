@@ -46,7 +46,7 @@ export const GanttGrid: React.FC<GanttGridProps> = ({ tasks, windowStart, rowsSc
       </div>
 
       {/* Task Grid */}
-      <div ref={rowsScrollRef} style={{ overflowX: "auto" }}>
+      <div ref={rowsScrollRef} style={{ overflowX: "auto" }} className="no-scrollbar">
         <svg
           style={{ display: "block" }}
           width={WINDOW_DAYS * COL_WIDTH}

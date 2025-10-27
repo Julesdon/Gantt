@@ -5,3 +5,12 @@
 .test-class {
   color: red;
 }
+
+.no-scrollbar {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
