@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { Task } from "../utils/taskGenerator";
+import type { Task } from "../utils/taskGenerator";
 import { ROW_HEIGHT } from "../utils/constants";
 import { TaskRow } from "./TaskRow";
+import mockTasks from "../utils/mockTasks.json";
 
 interface GanttBodyProps {
   tasks: Task[];
@@ -10,7 +11,9 @@ interface GanttBodyProps {
   windowEnd: Date;
 }
 
-export const GanttBody: React.FC<GanttBodyProps> = ({ tasks, windowStart, windowEnd }) => {
+export const GanttBody: React.FC<GanttBodyProps> = ({ windowStart, windowEnd }) => {
+  const tasks = mockTasks;
+
   const rowsScrollRef = useRef<HTMLDivElement | null>(null);
 
   const rowVirtualizer = useVirtualizer({
@@ -30,7 +33,6 @@ export const GanttBody: React.FC<GanttBodyProps> = ({ tasks, windowStart, window
               key={task.id}
               ref={(el) => {
                 if (el) {
-                  const height = el.offsetHeight || ROW_HEIGHT;
                   rowVirtualizer.measureElement(el);
                 }
               }}
@@ -41,7 +43,7 @@ export const GanttBody: React.FC<GanttBodyProps> = ({ tasks, windowStart, window
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <TaskRow task={task} windowStart={windowStart} windowEnd={windowEnd} />
+              <TaskRow task={task} windowStart={windowStart} windowEnd={windowEnd} rowIndex={virtualRow.index} />
             </div>
           );
         })}
